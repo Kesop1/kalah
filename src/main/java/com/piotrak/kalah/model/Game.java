@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -20,15 +21,10 @@ public class Game {
   private final Integer id;
   private final String url;
   private final Map<Integer, Integer> status;
+  @Setter
   private String message;
   @JsonIgnore
+  @Setter
   private boolean playerOneMove;
 
-  public void setPlayerOneMove(boolean playerOneMove) {
-    this.playerOneMove = playerOneMove;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
 }
