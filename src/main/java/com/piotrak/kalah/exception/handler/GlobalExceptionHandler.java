@@ -19,9 +19,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(value = {ForbiddenOperationException.class, IllegalArgumentException.class})
   protected ResponseEntity<Object> handleException(RuntimeException ex, WebRequest request) {
-    ErrorResponse errorResponse = ErrorResponse.builder()
-      .message(ex.getMessage())
-      .build();
+    ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
 
     return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST,
       request);

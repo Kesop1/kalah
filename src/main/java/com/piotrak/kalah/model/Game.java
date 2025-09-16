@@ -20,11 +20,15 @@ public class Game {
 
   private final Integer id;
   private final String url;
-  private final Map<Integer, Integer> status;
+  @Setter
+  private Board board;
   @Setter
   private String message;
   @JsonIgnore
   @Setter
   private boolean playerOneMove;
 
+  public Map<Integer, Integer> getStatus() {
+    return board.status();
+  }
 }

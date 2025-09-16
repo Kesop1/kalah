@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.piotrak.kalah.exception.ForbiddenOperationException;
+import com.piotrak.kalah.model.Board;
 import com.piotrak.kalah.model.Game;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +48,10 @@ public class GameServiceTest {
 
   @Test()
   public void test_makeMove_fromEmptyPit() {
-    game.getStatus().put(1, 0);
+    // Set pit 1 to 0
+    Map<Integer, Integer> customStatus = new HashMap<>(game.getStatus());
+    customStatus.put(1, 0);
+    game.setBoard(new Board(customStatus));
 
     assertThrows(ForbiddenOperationException.class, () -> service.makeMove(game.getId(), 1));
   }
@@ -57,75 +63,82 @@ public class GameServiceTest {
 
   @Test()
   public void test_makeMove_endInKalah() {
-    service.makeMove(game.getId(), 1);
+    Game updatedGame = service.makeMove(game.getId(), 1);
 
-    assertTrue(game.isPlayerOneMove());
+    assertTrue(updatedGame.isPlayerOneMove());
   }
 
   @Test()
   public void test_makeMove_endInPit() {
-    service.makeMove(game.getId(), 5);
+    Game updatedGame = service.makeMove(game.getId(), 5);
 
-    assertEquals(0, game.getStatus().get(5).intValue());
-    assertFalse(game.isPlayerOneMove());
+    assertEquals(0, updatedGame.getStatus().get(5).intValue());
+    assertFalse(updatedGame.isPlayerOneMove());
   }
 
   @Test()
   public void test_makeMove_endInOpponentKalah() {
-    game.getStatus().put(6, 8);
+    // Set pit 6 to 8
+    Map<Integer, Integer> customStatus = new HashMap<>(game.getStatus());
+    customStatus.put(6, 8);
+    game.setBoard(new Board(customStatus));
     int opponentKalah = game.getStatus().get(14);
 
-    service.makeMove(game.getId(), 6);
+    Game updatedGame = service.makeMove(game.getId(), 6);
 
-    assertEquals(0, game.getStatus().get(6).intValue());
-    assertEquals(opponentKalah, game.getStatus().get(14).intValue());
+    assertEquals(0, updatedGame.getStatus().get(6).intValue());
+    assertEquals(opponentKalah, updatedGame.getStatus().get(14).intValue());
   }
 
   @Test()
   public void test_makeMove_endInEmptyPit() {
-    game.getStatus().put(6, 13);
+    // Set pit 6 to 13
+    Map<Integer, Integer> customStatus = new HashMap<>(game.getStatus());
+    customStatus.put(6, 13);
+    game.setBoard(new Board(customStatus));
 
-    service.makeMove(game.getId(), 6);
+    Game updatedGame = service.makeMove(game.getId(), 6);
 
-    assertEquals(0, game.getStatus().get(6).intValue());
-    assertEquals(0, game.getStatus().get(8).intValue());
-    assertEquals(9, game.getStatus().get(7).intValue());
+    assertEquals(0, updatedGame.getStatus().get(6).intValue());
+    assertEquals(0, updatedGame.getStatus().get(8).intValue());
+    assertEquals(9, updatedGame.getStatus().get(7).intValue());
   }
 
   @Test()
   public void test_makeMove_playerOneWins() {
-    game.getStatus().put(1, 0);
-    game.getStatus().put(2, 0);
-    game.getStatus().put(3, 0);
-    game.getStatus().put(4, 0);
-    game.getStatus().put(5, 0);
-    game.getStatus().put(6, 1);
-    game.getStatus().put(7, 10);
+    Map<Integer, Integer> customStatus = new HashMap<>();
+    customStatus.put(1, 0);
+    customStatus.put(2, 0);
+    customStatus.put(3, 0);
+    customStatus.put(4, 0);
+    customStatus.put(5, 0);
+    customStatus.put(6, 1);
+    customStatus.put(7, 10);
+    customStatus.put(8, 1);
+    customStatus.put(9, 1);
+    customStatus.put(10, 1);
+    customStatus.put(11, 1);
+    customStatus.put(12, 1);
+    customStatus.put(13, 1);
+    customStatus.put(14, 1);
+    game.setBoard(new Board(customStatus));
 
-    game.getStatus().put(8, 1);
-    game.getStatus().put(9, 1);
-    game.getStatus().put(10, 1);
-    game.getStatus().put(11, 1);
-    game.getStatus().put(12, 1);
-    game.getStatus().put(13, 1);
-    game.getStatus().put(14, 1);
+    Game updatedGame = service.makeMove(game.getId(), 6);
 
-    service.makeMove(game.getId(), 6);
-
-    assertEquals(0, game.getStatus().get(6).intValue());
-    assertEquals(0, game.getStatus().get(8).intValue());
-    assertEquals(11, game.getStatus().get(7).intValue());
-    assertEquals(7, game.getStatus().get(14).intValue());
-    assertTrue(game.getMessage().contains("Player One"));
+    assertEquals(0, updatedGame.getStatus().get(6).intValue());
+    assertEquals(0, updatedGame.getStatus().get(8).intValue());
+    assertEquals(11, updatedGame.getStatus().get(7).intValue());
+    assertEquals(7, updatedGame.getStatus().get(14).intValue());
+    assertTrue(updatedGame.getMessage().contains("Player One"));
   }
 
   @Test
   public void test_makeMove_differentGames() {
     Game game2 = service.createGame(URL);
 
-    service.makeMove(game.getId(), 1);
-    service.makeMove(game2.getId(), 2);
+    Game updatedGame = service.makeMove(game.getId(), 1);
+    Game updatedGame2 = service.makeMove(game2.getId(), 2);
 
-    assertNotEquals(game.getStatus().get(1), game2.getStatus().get(1));
+    assertNotEquals(updatedGame.getStatus().get(1), updatedGame2.getStatus().get(1));
   }
 }
