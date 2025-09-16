@@ -13,3 +13,6 @@ to make a move:
 curl --header "Content-Type: application/json" \
 --request PUT \
 http://<host>:<port>/games/{gameId}/pits/{pitId}
+
+or better yet use swagger:
+http://localhost:8080/swagger-ui/index.html
